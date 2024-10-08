@@ -42,6 +42,7 @@ GEM
       multipart-post (~> 2)
     faraday-net_http (3.3.0)
       net-http
+    ffi (1.17.0)
     ffi (1.17.0-x64-mingw-ucrt)
     http-accept (1.7.0)
     http-cookie (1.0.7)
@@ -59,6 +60,7 @@ GEM
     netrc (0.11.0)
     opus-ruby (1.0.1)
       ffi
+    pg (1.5.8)
     pg (1.5.8-x64-mingw-ucrt)
     rest-client (2.1.0)
       http-accept (>= 1.7.0, < 2.0)
@@ -79,6 +81,7 @@ GEM
 
 PLATFORMS
   x64-mingw-ucrt
+  x86_64-linux
 
 DEPENDENCIES
   discordrb

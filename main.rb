@@ -1,13 +1,24 @@
-require_relative 'bots/telegram_bot' 
-require_relative 'bots/discord_bot' 
+require_relative 'telegram_bot'
+require_relative 'discord_bot'
 
 require 'dotenv'
 Dotenv.load
-token = ENV['TELEGRAM_TOKEN']
 
-TELEGRAM_BOT_TOKEN = token
+TELEGRAM_BOT_TOKEN = ENV['TELEGRAM_TOKEN']
 DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']
 
-bot = Bots::WebAvailability.new(TELEGRAM_BOT_TOKEN, ENV['DB_HOST'])
+# Variable común para la conexión a la base de datos
+db_connection = ENV['DB_HOST']
 
-bot.execute
+# Instanciar bots para Telegram y Discord
+telegram_bot = Bots::WebAvailability.new(TELEGRAM_BOT_TOKEN, db_connection)
+discord_bot = Bots::WebAvailability.new(DISCORD_BOT_TOKEN, db_connection)
+
+# Ejecutar ambos bots de manera concurrente
+threads = []
+
+threads << Thread.new { telegram_bot.execute }
+threads << Thread.new { discord_bot.execute }
+
+# Esperar que ambos bots finalicen
+threads.each(&:join)
