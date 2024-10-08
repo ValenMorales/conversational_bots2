@@ -52,9 +52,9 @@ module DiscordBot
     def process_command(event)
       case event.content.split.first
       when '/start'
-        send_message(event, "Hello! Use /add_website to add a new website.")
+        send_message(event.user, "Hello! Use /add_website to add a new website.")
       when '/add_website'
-        send_message(event, "Please send the URL of the website you want to add.")
+        send_message(event.user, "Please send the URL of the website you want to add.")
         @user_data[event.user.id] = :awaiting_url
       end
     end
@@ -76,8 +76,8 @@ module DiscordBot
       end
     end
 
-    def send_message(user_id, text)
-      @bot.send_message(user_id, text)
+    def send_message(user, text)
+      user.pm(text)  # Use `pm` to send a private message to the user
     end
   end
 end
