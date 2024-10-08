@@ -5,7 +5,7 @@ require 'telegram/bot'
 
 require_relative 'add_review'
 
-module Bots
+module TelegramBot
   ##
   # Telegram base bot to process chat commands to add availability websites
   # check requests# frozen_string_literal: true

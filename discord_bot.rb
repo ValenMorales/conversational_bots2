@@ -4,7 +4,7 @@ require 'logger'
 require 'discordrb'
 require_relative 'add_review'
 
-module Bots
+module DiscordBot
   ##
   # Discord bot to process chat commands to add availability websites
   #

@@ -11,12 +11,12 @@ DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']
 db_connection = ENV['DB_HOST']
 
 # Instanciar bots para Telegram y Discord
-telegram_bot = Bots::WebAvailability.new(TELEGRAM_BOT_TOKEN, db_connection)
-discord_bot = Bots::WebAvailability.new(DISCORD_BOT_TOKEN, db_connection)
+telegram_bot = TelegramBot::WebAvailability.new(TELEGRAM_BOT_TOKEN, db_connection)
+discord_bot = DiscordBot::WebAvailability.new(DISCORD_BOT_TOKEN, db_connection)
 
 # Ejecutar ambos bots de manera concurrente
 threads = []
-
+#telegram_bot.execute
 threads << Thread.new { telegram_bot.execute }
 threads << Thread.new { discord_bot.execute }
 
