@@ -5,11 +5,12 @@ require_relative 'bot_base'  # Ensure to require bot_base
 
 module DiscordBot
   class WebAvailability < Bot::Base
-    def initialize(token, connection)
+    def initialize(token, connection, commands)
       super(read_options: {}, process_options: {}, write_options: {})  # Call the superclass
       @bot = Discordrb::Bot.new token: token
       @connection = connection
       @user_data = {}
+      @commands
     end
 
     # Implement the read method
