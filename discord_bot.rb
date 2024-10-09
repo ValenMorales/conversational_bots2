@@ -3,11 +3,9 @@ require 'logger'
 
 module DiscordBot
   class WebAvailability
-    attr_reader :connection
 
-    def initialize(token, connection, commands, unknown_command_handler = nil)
+    def initialize(token, commands, unknown_command_handler = nil)
       @bot = Discordrb::Bot.new token: token
-      @connection = connection
       @user_data = {}
       @commands = commands
       @processed_commands = {} 

@@ -27,7 +27,7 @@ end
 def save_website(event, message, user, bot_instance)
   owner = user.is_a?(Integer) ? user : user.id
   
-  config = { connection: bot_instance.connection, owner: owner, url: message }
+  config = { connection: db_connection, owner: owner, url: message }
   Utils::AddReview.new(config).execute
 end
 
@@ -43,7 +43,7 @@ commands = {
   },
   "/check_status" => {
     description: "/check_status",
-     type:"discord",
+    type:"discord",
     action: Proc.new { |event| 
       puts "Chequeando el estado del sistema..."
       event.user.pm("El sistema está funcionando correctamente.")
@@ -52,10 +52,10 @@ commands = {
 }
 
 
-telegram_bot = TelegramBot::WebAvailability.new(TELEGRAM_BOT_TOKEN, db_connection, commands, custom_handler)
+telegram_bot = TelegramBot::WebAvailability.new(TELEGRAM_BOT_TOKEN, commands, custom_handler)
 
 # Inicia el bot
-discord_bot = DiscordBot::WebAvailability.new(DISCORD_BOT_TOKEN, db_connection, commands, custom_handler)
+discord_bot = DiscordBot::WebAvailability.new(DISCORD_BOT_TOKEN, commands, custom_handler)
 
 # Create threads to run both bots concurrently
 threads = []

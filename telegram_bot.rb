@@ -3,13 +3,11 @@ require 'logger'
 
 module TelegramBot
   class WebAvailability
-    attr_reader :connection
-    
-    def initialize(token, connection, commands, custom_handler = nil)
+
+    def initialize(token, commands, custom_handler = nil)
       @commands = commands
       @processed_commands = {}
       @bot = Telegram::Bot::Client.new(token)
-      @connection = connection
       @user_data = {}
       @custom_handler = custom_handler || method(:default_unknown_command_handler)
     end
