@@ -30,8 +30,11 @@ def save_website(event, message, user, bot_instance)
   Utils::AddReview.new(config).execute
 end
 
+# List to store actions (functions)
+actions_list = []
+
 # Function to generate the commands hash from user input
-def generate_commands
+def generate_commands(actions_list)
   commands = {}
   puts "Welcome to the Command Generator. Enter the command details below."
 
@@ -43,33 +46,36 @@ def generate_commands
     puts "Enter description for '#{command_name}':"
     description = gets.chomp
 
-    puts "Enter message for '#{command_name}' (leave blank if not applicable):"
-    message = gets.chomp
+    # Ask whether the bot should send a message or execute a function
+    puts "Do you want the bot to respond with a message or execute a function? (message/function)"
+    response_type = gets.chomp.downcase
 
-    puts "Is this a Discord-specific command? (yes/no)"
-    is_discord = gets.chomp.downcase == 'yes'
+    # Generate message or action based on the response type
+    if response_type == 'message'
+      puts "Enter the message for '#{command_name}':"
+      message = gets.chomp
+      commands[command_name] = {
+        description: "/#{command_name}",
+        message: message
+      }
+    elsif response_type == 'function'
+      # Define a custom action (this will be added to the list)
+      puts "Enter a description of the function for '#{command_name}':"
+      function_description = gets.chomp
+      custom_action = Proc.new { |event| puts "Executing function for #{command_name}: #{function_description}" }
+      
+      # Store the function in the actions list
+      actions_list << custom_action
 
-    # Action block, optional for commands with specific actions
-    action = nil
-    if is_discord
-      puts "Do you want to add a custom action for this command? (yes/no)"
-      add_action = gets.chomp.downcase == 'yes'
-      if add_action
-        puts "Custom action will be added. Example actions will be included in your bot logic."
-        action = Proc.new { |event|
-          puts "Executing custom action for #{command_name}..."
-          event.user.pm("#{command_name.capitalize} action executed!")
-        }
-      end
+      # Add command with action
+      commands[command_name] = {
+        description: "/#{command_name}",
+        action: custom_action
+      }
+    else
+      puts "Invalid input. Please choose either 'message' or 'function'."
+      next
     end
-
-    # Building the command hash
-    commands[command_name] = {
-      description: "/#{command_name}",
-      message: message.empty? ? nil : message,
-      type: is_discord ? "discord" : nil,
-      action: action
-    }.compact
 
     puts "Command '#{command_name}' added!"
   end
@@ -78,7 +84,7 @@ def generate_commands
 end
 
 # Generate the commands hash by calling the function
-generated_commands = generate_commands
+generated_commands = generate_commands(actions_list)
 puts "\nGenerated Commands JSON:"
 puts generated_commands
 
