@@ -39,7 +39,6 @@ module Utils
 
     def build_query
       query = 'INSERT INTO websites (owner, url) VALUES ($1, $2);'
-      puts config[:url] + 'ayudaa'
       params = [config[:owner], config[:url]]
 
       [query, params]
