@@ -1,22 +1,24 @@
-
 require 'telegram/bot'
-require 'logger' # Para registrar errores
+require 'logger' 
 
 module TelegramBot
   class WebAvailability
-    def initialize(token, connection, commands)
+    attr_reader :connection
+    
+    def initialize(token, connection, commands, custom_handler = nil)
       @commands = commands
       @processed_commands = {}
       @bot = Telegram::Bot::Client.new(token)
       @connection = connection
       @user_data = {}
+      @custom_handler = custom_handler || method(:default_unknown_command_handler)
     end
 
     def start
       @commands.each do |command_key, command_info|
         add_command(command_info[:description], command_info[:message])
       end
-      listen 
+      listen
     end
 
     def add_command(command_description, command_message)
@@ -25,7 +27,7 @@ module TelegramBot
 
     def listen
       @bot.listen do |message|
-        if @processed_commands.key?(message.text) 
+        if @processed_commands.key?(message.text)
           send_message(message.chat.id, @processed_commands[message.text])
         else
           handle_unknown_command(message)
@@ -36,7 +38,11 @@ module TelegramBot
     end
 
     def handle_unknown_command(message)
-      send_message(message.chat.id, "Comando desconocido: #{message.text}")
+      @custom_handler.call(message, message.text, message.chat.id, self)
+    end
+
+    def default_unknown_command_handler(message, bot_instance)
+      bot_instance.send_message(message.chat.id, "Comando desconocido: #{message.text}")
     end
 
     def send_message(chat_id, text)

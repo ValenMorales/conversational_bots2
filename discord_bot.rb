@@ -1,62 +1,66 @@
-# frozen_string_literal: true
-
 require 'discordrb'
-require_relative 'bot_base'  # Ensure to require bot_base
+require 'logger' 
 
 module DiscordBot
-  class WebAvailability < Bot::Base
-    def initialize(token, connection, commands)
-      super(read_options: {}, process_options: {}, write_options: {})  # Call the superclass
+  class WebAvailability
+    attr_reader :connection
+
+    def initialize(token, connection, commands, unknown_command_handler = nil)
       @bot = Discordrb::Bot.new token: token
       @connection = connection
       @user_data = {}
-      @commands
+      @commands = commands
+      @processed_commands = {} 
+      @unknown_command_handler = unknown_command_handler
     end
 
-    # Implement the read method
+    def start
+      @commands.each do |command_key, command_info|
+        if command_info[:action]
+          add_command(command_info[:description], nil, command_info[:action])
+        else
+          add_command(command_info[:description], command_info[:message])
+        end
+      end
+
+      read
+    end
+
+    def add_command(command_description, command_message = nil, command_action = nil)
+      if command_action
+        @processed_commands[command_description] = { action: command_action }
+      else
+        @processed_commands[command_description] = { message: command_message }
+      end
+    end
+
     def read
       @bot.message do |event|
         process_message(event)
       rescue StandardError => e
-        Logger.new($stdout).error(e.message)
+        Logger.new($stdout).error("Error: #{e.message}")
       end
 
       @bot.run
     end
 
-    # Implement the process method
-    def process
-      if @user_data.dig(:user_id) == :awaiting_url
-        { status: 'processing' }
-      else
-        { status: 'not_processing' }
-      end
-    end
-
-    # Implement the write method
-    def write
-      # Here we save to the database or perform the desired action
-      config = { connection: @connection, owner: @user_data[:user_id], url: @user_data[:url] }
-      Utils::AddReview.new(config).execute
-    end
-
-    private
-
     def process_message(event)
-      if event.content.start_with?('/')
         process_command(event)
-      else
-        process_input(event.user.id, event.content)
-      end
     end
 
     def process_command(event)
-      case event.content.split.first
-      when '/start'
-        send_message(event.user, "Hello! Use /add_website to add a new website.")
-      when '/add_website'
-        send_message(event.user, "Please send the URL of the website you want to add.")
-        @user_data[event.user.id] = :awaiting_url
+      command = event.content.split.first
+      puts @processed_commands.keys
+      if @processed_commands.key?(command)
+        command_data = @processed_commands[command]
+
+        if command_data[:message] # Si hay un mensaje predefinido
+          send_message(event.user, command_data[:message])
+        elsif command_data[:action] # Si hay una acción definida
+          execute_action(command_data[:action], event)
+        end
+      else
+        handle_unknown_command(event)
       end
     end
 
@@ -64,21 +68,29 @@ module DiscordBot
       if @user_data[user_id] == :awaiting_url
         validate_website(user_id, input)
       else
-        send_message(user_id, "Send /add_website to add a website.")
+        send_message(user_id, "Use /add_website para agregar un sitio web.")
       end
     end
 
-    def validate_website(user_id, url)
-      if url.start_with?('http://', 'https://')
-        @user_data[user_id] = { url: url, user_id: user_id }
-        send_message(user_id, "Website added. You'll be notified if it's down.")
+    def execute_action(action, event)
+      if action.is_a?(Proc)
+        action.call(event) 
       else
-        send_message(user_id, "Invalid URL. Please enter a valid website.")
+        send_message(event.user, "Acción no válida o no ejecutable.")
       end
     end
 
+    def handle_unknown_command(message)
+      if @unknown_command_handler
+        @unknown_command_handler.call(message, message.message.content, message.user, self) 
+      else
+        send_message(message.chat.id, "Comando desconocido: #{message.text}") 
+      end
+    end
+
+    # Envía un mensaje a un usuario específico
     def send_message(user, text)
-      user.pm(text)  # Use `pm` to send a private message to the user
+      user.pm(text)  
     end
   end
 end
