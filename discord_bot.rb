@@ -3,6 +3,7 @@ require 'logger'
 
 module DiscordBot
   class WebAvailability
+    attr_reader :bot
 
     def initialize(token, commands, unknown_command_handler = nil)
       @bot = Discordrb::Bot.new token: token
@@ -63,14 +64,6 @@ module DiscordBot
       end
     end
 
-    def process_input(user_id, input)
-      if @user_data[user_id] == :awaiting_url
-        validate_website(user_id, input)
-      else
-        send_message(user_id, "Use /add_website para agregar un sitio web.")
-      end
-    end
-
     def execute_action(action, event)
       if action.is_a?(Proc)
         action.call(event, event.content, event.user, self) 
@@ -81,7 +74,7 @@ module DiscordBot
 
     def handle_unknown_command(event)
       if @unknown_command_handler
-        @unknown_command_handler.call(event, message.content, message.user, self)
+        @unknown_command_handler.call(event, event.content, event.user, self)
       end 
     end
 

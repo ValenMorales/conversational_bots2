@@ -4,6 +4,8 @@ require 'logger'
 module TelegramBot
   class WebAvailability
 
+    attr_reader :bot
+
     def initialize(token, commands, unknown_command_handler = nil)
       @commands = commands
       @processed_commands = {}
