@@ -6,7 +6,6 @@ module DiscordBot
 
     def initialize(token, commands, unknown_command_handler = nil)
       @bot = Discordrb::Bot.new token: token
-      @user_data = {}
       @commands = commands
       @processed_commands = {} 
       @unknown_command_handler = unknown_command_handler
@@ -14,10 +13,12 @@ module DiscordBot
 
     def start
       @commands.each do |command_key, command_info|
-        if command_info[:action]
-          add_command(command_info[:description], nil, command_info[:action])
-        else
-          add_command(command_info[:description], command_info[:message])
+        if command_info[:type].nil? || command_info[:type] == "discord" 
+          if command_info[:action]
+            add_command(command_info[:description], nil, command_info[:action])
+          else
+            add_command(command_info[:description], command_info[:message])
+          end
         end
       end
 
@@ -72,18 +73,16 @@ module DiscordBot
 
     def execute_action(action, event)
       if action.is_a?(Proc)
-        action.call(event) 
+        action.call(event, event.content, event.user, self) 
       else
         send_message(event.user, "Acción no válida o no ejecutable.")
       end
     end
 
-    def handle_unknown_command(message)
+    def handle_unknown_command(event)
       if @unknown_command_handler
-        @unknown_command_handler.call(message, message.message.content, message.user, self) 
-      else
-        send_message(message.chat.id, "Comando desconocido: #{message.text}") 
-      end
+        @unknown_command_handler.call(event, message.content, message.user, self)
+      end 
     end
 
     # Envía un mensaje a un usuario específico
