@@ -17,14 +17,14 @@ INSTRUCTION = 'Send /add_website to add a website.'
 
 custom_handler = Proc.new do |event, message, user, bot_instance|
   if message.start_with?('http://', 'https://')
-    save_website(event, message, user, bot_instance)
+    save_website( message, user, bot_instance)
     bot_instance.send_message(user, WEBSITE_ADDED)
   else
     bot_instance.send_message(user, INVALID)
   end
 end
 
-def save_website(event, message, user, bot_instance)
+def save_website( message, user, bot_instance)
   owner = user.is_a?(Integer) ? user : user.id
   
   config = { connection: db_connection, owner: owner, url: message }
@@ -41,10 +41,10 @@ commands = {
     description: "/add_website",
     message: ADD_WEBSITE,
   },
-  "/check_status" => {
+  "check_status" => {
     description: "/check_status",
     type:"discord",
-    action: Proc.new { |event| 
+    action: Proc.new { |event, message, user, instance| 
       puts "Chequeando el estado del sistema..."
       event.user.pm("El sistema está funcionando correctamente.")
     }
