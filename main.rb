@@ -1,22 +1,25 @@
-require_relative 'telegram_bot'
-require_relative 'discord_bot'
+# frozen_string_literal: true
+
+require_relative 'bots/telegram_bot'
+require_relative 'bots/discord_bot'
+require_relative 'use_cases/web_availability/commands'
 
 require 'dotenv'
 Dotenv.load
 
-# Load environment variables for bot tokens and database connection
 TELEGRAM_BOT_TOKEN = ENV['TELEGRAM_TOKEN']
 DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']
 db_connection = ENV['DB_HOST']
 
-# Initialize Telegram and Discord bots with their respective tokens and a shared database connection
-telegram_bot = TelegramBot::WebAvailability.new(TELEGRAM_BOT_TOKEN, db_connection)
-discord_bot = DiscordBot::WebAvailability.new(DISCORD_BOT_TOKEN, db_connection)
+bot_commands = BotCommands.new(db_connection)
 
-# Create threads to run both bots concurrently
+telegram_bot = TelegramBot.new(TELEGRAM_BOT_TOKEN, bot_commands.commands,
+                               bot_commands.method(:custom_handler))
+discord_bot = DiscordBot.new(DISCORD_BOT_TOKEN, bot_commands.commands,
+                             bot_commands.method(:custom_handler))
+
 threads = []
-threads << Thread.new { telegram_bot.execute }
-threads << Thread.new { discord_bot.execute }
+threads << Thread.new { telegram_bot.start }
+threads << Thread.new { discord_bot.start }
 
-# Wait for both threads to finish execution
 threads.each(&:join)

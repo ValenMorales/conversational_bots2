@@ -2,12 +2,12 @@
 
 require_relative 'request'
 
-db_config = {
-    host:ENV['DB_HOST'],
-    adapter: 'postgresql',
-    encoding: 'utf-8',
-    database: ENV['POSTGRES_DB'],
-    schema_search_path: 'public'
+{
+  host: ENV['DB_HOST'],
+  adapter: 'postgresql',
+  encoding: 'utf-8',
+  database: ENV['POSTGRES_DB'],
+  schema_search_path: 'public'
 }
 
 module Utils
@@ -39,7 +39,6 @@ module Utils
 
     def build_query
       query = 'INSERT INTO websites (owner, url) VALUES ($1, $2);'
-      puts config[:url] + 'ayudaa'
       params = [config[:owner], config[:url]]
 
       [query, params]
