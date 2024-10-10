@@ -18,11 +18,14 @@ Todo comando debe tener una descripción. La estructura de un comando es la sigu
 - **action**: Si tiene un `action`, significa que ejecutará esa función dado el comando.
 - **type**: Si tiene un `type`, significa que la lógica será específica para un tipo de bot.
 
-## Métodos de Instancias
+## Instancias
 
-Toda instancia de bot tiene los siguientes métodos que pueden ser llamados:
+Toda instancia de bot tiene los siguientes elementos que pueden ser llamados:
 
-- **send_message**: Envía un mensaje a un usuario o canal específico.
+- **send_message**: metodo que envia un mensaje a un usuario o canal específico.
+
+- **bot**: elementos especificos del bot que permiten usar sus respectivas
+apis para funciones personalizadas
 
 ## Ejemplo de Uso
 
