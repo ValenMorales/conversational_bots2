@@ -22,6 +22,8 @@ commands = {
 
 bot = Bot.new(token: 'YOUR_BOT_TOKEN', commands)
 
+```
+
 ## Commands
 
 Each command must include a detailed description and follow a defined structure, utilizing Procs for dynamic and reusable logic. The commands are parameterized as follows:
