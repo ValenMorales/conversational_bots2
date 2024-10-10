@@ -1,28 +1,36 @@
-# Documentación del Bot
+## Overview
 
-## Acceso a Atributos
+This tool is designed to simplify the process of generating and customizing bots. It provides a unified codebase that allows the creation of multiple bot instances with consistent functionality while enabling flexibility in the customization of commands and actions.
 
-Toda función a ejecutar puede acceder a los siguientes atributos:
+## Access to Attributes
 
-- **event**: El evento específico que devuelve la API.
-- **message**: El mensaje del usuario.
-- **user**: El usuario o ID del usuario que envió el mensaje.
-- **instance**: Instancia del bot para ejecutar acciones (por ejemplo, llamar a `send_message`).
+Each function executed within the bot framework has access to the following attributes:
 
-## Comandos
+- **event**: The specific event returned by the bot’s API.
+- **message**: The message sent by the user.
+- **user**: The user who sent the message.
+- **instance**: The current instance of the bot, allowing actions like sending messages using `send_message`.
 
-Todo comando debe tener una descripción. La estructura de un comando es la siguiente:
+## Commands
 
-- **description**: Descripción del comando.
-- **message**: Si tiene un `message`, significa que solo va a responder a un comando dado.
-- **action**: Si tiene un `action`, significa que ejecutará esa función dado el comando.
-- **type**: Si tiene un `type`, significa que la lógica será específica para un tipo de bot.
+Each command within the bot framework must follow this structure:
 
-## Métodos de Instancias
+1. **description**: A brief explanation of the command.
+2. **message**: If provided, the bot will respond to the command with this predefined message.
+3. **action**: If defined, the bot will execute this function when the command is triggered.
+4. **type**: If a type is provided, the command logic will be specific to the bot type (e.g., Telegram, Discord).
 
-Toda instancia de bot tiene los siguientes métodos que pueden ser llamados:
+### Command Structure Example
 
-- **send_message**: Envía un mensaje a un usuario o canal específico.
-
-## Ejemplo de Uso
+```ruby
+'start' => {
+  description: '/start',
+  message: 'Welcome to the bot! Use /help for more information.'
+},
+'add_website' => {
+  description: '/add_website',
+  action: proc do |event, message, user, instance|
+    instance.send_message(user, 'Please provide the URL of the website you want to add.')
+  end
+}
 
