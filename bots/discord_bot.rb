@@ -2,44 +2,26 @@
 
 require 'discordrb'
 require 'logger'
+require_relative 'bot'
 
-class DiscordBot
-  attr_reader :bot, :commands, :processed_commands, :unknown_command_handler
+# DiscordBot class inherits from Bot and implements Discord-specific functionality.
+class DiscordBot < Bot
+  attr_reader :bot
 
+  # Initializes the DiscordBot with token, commands, and an optional unknown command handler.
+  #
+  # @param token [String] The bot's authentication token for Discord.
+  # @param commands [Hash] A hash containing the bot's commands.
+  # @param unknown_command_handler [Proc, nil] An optional handler for unknown commands.
   def initialize(token, commands, unknown_command_handler = nil)
-    @bot = Discordrb::Bot.new token: token
-    @commands = commands
-    @processed_commands = {}
-    @unknown_command_handler = unknown_command_handler
+    super(token, commands, unknown_command_handler, 'discord')
+    @bot = Discordrb::Bot.new(token: token)
   end
 
-  # Starts the bot and registers the commands
-  def start
-    @commands.each_value do |command_info|
-      if command_info[:type].nil? || command_info[:type] == 'discord'
-        if command_info[:action]
-          add_command(command_info[:description], nil, command_info[:action])
-        else
-          add_command(command_info[:description], command_info[:message])
-        end
-      end
-    end
-
-    read
-  end
-
-  # Adds a command to the bot
-  def add_command(command_description, command_message = nil, command_action = nil)
-    @processed_commands[command_description] = {
-      message: command_message,
-      action: command_action
-    }
-  end
-
-  # Reads and processes incoming messages
+  # Reads and processes incoming messages by listening to Discord events.
   def read
     @bot.message do |event|
-      process_message(event)
+      process_command(event)
     rescue StandardError => e
       Logger.new($stdout).error("Error: #{e.message}")
     end
@@ -47,27 +29,18 @@ class DiscordBot
     @bot.run
   end
 
-  # Processes the received message
-  def process_message(event)
+  # Processes the received command from the event.
+  #
+  # @param event [Discordrb::Events::MessageEvent] The event containing the message and user information.
+  def process_command(event)
     command = event.content.split.first
-    if @processed_commands.key?(command)
-      command_data = @processed_commands[command]
-      validate_command_type(command_data, event)
-    else
-      handle_unknown_command(event)  # Handle unknown commands here
-    end
+    evaluate_command(command, event)
   end
 
-  # Validates the type of command and executes the action or sends a message
-  def validate_command_type(command_data, event)
-    if command_data[:message]
-      send_message(event.user, command_data[:message])
-    elsif command_data[:action]
-      execute_action(command_data[:action], event)
-    end
-  end
-
-  # Executes a specific action if valid
+  # Executes a command's action if it is a valid Proc.
+  #
+  # @param action [Proc] The action to be executed.
+  # @param event [Discordrb::Events::MessageEvent] The event containing the message and user information.
   def execute_action(action, event)
     if action.is_a?(Proc)
       action.call(event, event.content, event.user, self)
@@ -76,17 +49,20 @@ class DiscordBot
     end
   end
 
-  # Handles an unknown command
+  # Handles unknown commands by invoking the unknown command handler if defined.
+  #
+  # @param event [Discordrb::Events::MessageEvent] The event containing the message and user information.
   def handle_unknown_command(event)
-    return unless @unknown_command_handler
-
-    @unknown_command_handler.call(event, event.content, event.user, self)
+    @unknown_command_handler&.call(event, event.content, event.user, self)
   end
 
-  # Sends a direct message to a user
+  # Sends a private message to a user.
+  #
+  # @param user [Discordrb::User] The user who will receive the message.
+  # @param text [String] The message text to be sent.
   def send_message(user, text)
-    user.pm(text)  # Change to dm if necessary
+    user.pm(text)
   rescue StandardError => e
-    Logger.new($stdout).error("Error: Could not send message, user object does not support dm. #{e.message}")
+    Logger.new($stdout).error("Error: Could not send message. #{e.message}")
   end
 end
