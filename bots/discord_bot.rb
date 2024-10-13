@@ -14,16 +14,18 @@ class DiscordBot < Bot
   # @param commands [Hash] A hash containing the bot's commands.
   # @param unknown_command_handler [Proc, nil] An optional handler for unknown commands.
   def initialize(token, commands, unknown_command_handler = nil)
-    super(token, commands, unknown_command_handler, 'discord')
+    super(token, commands, 'discord', unknown_command_handler) # Corregido el orden de argumentos
     @bot = Discordrb::Bot.new(token: token)
   end
 
   # Reads and processes incoming messages by listening to Discord events.
   def read
     @bot.message do |event|
-      process_command(event)
-    rescue StandardError => e
-      Logger.new($stdout).error("Error: #{e.message}")
+      begin
+        process_command(event)
+      rescue StandardError => e
+        Logger.new($stdout).error("Error: #{e.message}")
+      end
     end
 
     @bot.run
@@ -64,5 +66,13 @@ class DiscordBot < Bot
     user.pm(text)
   rescue StandardError => e
     Logger.new($stdout).error("Error: Could not send message. #{e.message}")
+  end
+
+  # Extracts the user from the event (Discord).
+  #
+  # @param event [Discordrb::Events::MessageEvent] The event containing the message and user information.
+  # @return [Discordrb::User] The user object representing the sender.
+  def take_event_user(event)
+    event.user
   end
 end
