@@ -23,3 +23,5 @@ threads << Thread.new { telegram_bot.start }
 threads << Thread.new { discord_bot.start }
 
 threads.each(&:join)
+
+puts 'Bots stopped, exiting program.'
