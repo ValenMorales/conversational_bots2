@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require_relative 'utils/exceptions'
+
+require 'bas/utils/exceptions/function_not_implemented'
 
 # Base class for different types of bots.
 # Handles the registration and execution of commands, including unknown commands.
@@ -24,7 +25,10 @@ class Bot
   # Registers commands for the bot based on its type.
   def start
     @commands.each_value do |command_info|
-      add_command(command_info[:description], command_info[:message], command_info[:action]) if valid_command?(command_info)
+      if valid_command?(command_info)
+        add_command(command_info[:description], command_info[:message],
+                    command_info[:action])
+      end
     end
 
     read

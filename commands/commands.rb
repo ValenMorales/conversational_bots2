@@ -9,10 +9,9 @@ class BotCommands
     @commands = {}
   end
 
-  def custom_handler(event, message, user, bot_instance)
-  end
+  def custom_handler(event, message, user, bot_instance); end
 
-  def add_command(description, message= nil, action= nil, type= nil)
+  def add_command(description, message = nil, action = nil, type = nil)
     @commands[description] = {
       description: description,
       message: message,

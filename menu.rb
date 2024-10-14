@@ -1,13 +1,13 @@
 # frozen_string_literal: true
 
-require_relative 'use_cases/web_availability/add_review' 
+require_relative 'use_cases/web_availability/add_review'
 require_relative 'bots/telegram_bot'
 require_relative 'bots/discord_bot'
-require_relative 'use_cases/web_availability/commands' 
+require_relative 'use_cases/web_availability/commands'
 
 require 'dotenv'
 Dotenv.load
-
+#menu
 class Menu
   TELEGRAM_BOT_TOKEN = ENV['TELEGRAM_TOKEN']
   DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']
@@ -21,7 +21,7 @@ class Menu
   INSTRUCTION = 'Send /add_data to add data.'
 
   def initialize
-    @db_connection = ENV['DB_HOST'] 
+    @db_connection = ENV['DB_HOST']
     @user_data = {}
     @custom_commands = {}
   end
@@ -53,9 +53,9 @@ class Menu
     bot_instance.send_message(user, ADD_DATA)
     @user_data[user.id] = :awaiting_data
   end
-  
+
   def generate_commands
-    puts "Welcome to the Command Generator. Enter the command details below."
+    puts 'Welcome to the Command Generator. Enter the command details below.'
 
     loop do
       puts "\nEnter command name (or type 'exit' to finish):"
@@ -63,9 +63,9 @@ class Menu
       break if command_name == 'exit'
 
       puts "Enter description for '#{command_name}':"
-      description = gets.chomp
+      gets.chomp
 
-      puts "Do you want the bot to respond with a message or execute a function? (message/function)"
+      puts 'Do you want the bot to respond with a message or execute a function? (message/function)'
       action_type = gets.chomp.downcase
 
       if action_type == 'message'

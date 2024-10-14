@@ -30,7 +30,7 @@ class TelegramBot < Bot
   #
   # @param event [Telegram::Bot::Types::Message] The incoming message event.
   def process_command(event)
-    command = event.text.split.first  # Extracts the command from the message text.
+    command = event.text.split.first # Extracts the command from the message text.
     evaluate_command(command, event)
   end
 

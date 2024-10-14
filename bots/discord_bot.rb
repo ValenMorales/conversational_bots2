@@ -10,18 +10,16 @@ class DiscordBot < Bot
 
   # Initializes the DiscordBot
   def initialize(token, commands, unknown_command_handler = nil)
-    super(token, commands, 'discord', unknown_command_handler) 
+    super(token, commands, 'discord', unknown_command_handler)
     @bot = Discordrb::Bot.new(token: token)
   end
 
   # Reads and processes incoming messages by listening to Discord events.
   def read
     @bot.message do |event|
-      begin
-        process_command(event)
-      rescue StandardError => e
-        Logger.new($stdout).error("Error: #{e.message}")
-      end
+      process_command(event)
+    rescue StandardError => e
+      Logger.new($stdout).error("Error: #{e.message}")
     end
 
     @bot.run

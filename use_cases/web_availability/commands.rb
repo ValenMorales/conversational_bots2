@@ -3,6 +3,7 @@
 require_relative 'add_review'
 require_relative '../../commands/commands'
 
+# Bot commands implementation for website availability use case
 class WebsiteBotCommands < BotCommands
   attr_reader :user_data
 
@@ -13,17 +14,18 @@ class WebsiteBotCommands < BotCommands
   INSTRUCTION = 'Send /add_website to add a website.'
 
   def initialize(db_connection)
-    super() 
+    super()
     @user_data = {}
     @db_connection = db_connection
-    define_commands 
+    define_commands
   end
 
   def define_commands
     add_command('/start')
-    add_command('/add_website', nil, 
-    proc do |event, message, user, instance|
-      self.add_website(event, message, user, instance) end)
+    add_command('/add_website', nil,
+                proc do |event, message, user, instance|
+                  add_website(event, message, user, instance)
+                end)
   end
 
   def custom_handler(event, message, user, bot_instance)
@@ -53,5 +55,4 @@ class WebsiteBotCommands < BotCommands
     bot_instance.send_message(user, ADD_WEBSITE)
     @user_data[user.id] = :awaiting_url
   end
-
 end

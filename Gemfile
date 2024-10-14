@@ -6,4 +6,4 @@ gem 'dotenv'
 gem 'pg'
 gem 'telegram-bot-ruby', '= 1.0'
 
-gem "bas", "~> 1.5"
+gem 'bas', '~> 1.5'
