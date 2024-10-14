@@ -28,7 +28,7 @@ bot = Bot.new(token: 'YOUR_BOT_TOKEN', commands)
 
 Each command must include a detailed description and follow a defined structure, utilizing Procs for dynamic and reusable logic. The commands are parameterized as follows:
 
-1. **description**: A brief explanation of the command.
+1. **description**: The exact text the user should type to execute the command.
 2. **message**: If provided, the bot will respond to the command with this predefined message.
 3. **action**: If defined, the bot will execute this function when the command is triggered.
 4. **type**: If a type is provided, the command logic will be specific to the bot type (e.g., Telegram, Discord).
@@ -39,7 +39,7 @@ Each function that is executed can access the following attributes via **Procs**
 
 - **event**: The specific event returned by the API.
 - **message**: The message sent by the user.
-- **user**: The user or user ID who sent the message.
+- **user**: The user who sent the message.
 - **instance**: The bot instance used to execute actions (e.g., calling `send_message`).
 
 ### Command Structure Example
