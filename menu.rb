@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-require_relative 'use_cases/web_availability/add_review' # Renombrar para que sea más general
+require_relative 'use_cases/web_availability/add_review' 
 require_relative 'bots/telegram_bot'
 require_relative 'bots/discord_bot'
-require_relative 'use_cases/web_availability/commands' # Renombrar para que sea más general
+require_relative 'use_cases/web_availability/commands' 
 
 require 'dotenv'
 Dotenv.load
@@ -21,12 +21,11 @@ class Menu
   INSTRUCTION = 'Send /add_data to add data.'
 
   def initialize
-    @db_connection = ENV['DB_HOST']  # Conexión a la base de datos
+    @db_connection = ENV['DB_HOST'] 
     @user_data = {}
     @custom_commands = {}
   end
 
-  # Método para manejar comandos personalizados
   def custom_handler(event, message, user, bot_instance)
     owner = user.id
     if @user_data[owner] == :awaiting_data
@@ -36,7 +35,6 @@ class Menu
     end
   end
 
-  # Validación de los datos
   def validate_data(_event, message, user, bot_instance)
     if message.strip.empty?
       bot_instance.send_message(user, INVALID)
@@ -46,19 +44,16 @@ class Menu
     end
   end
 
-  # Guardar los datos en la base de datos
   def save_data(message, user)
     config = { connection: @db_connection, owner: user.id, data: message }
     Utils::AddReview.new(config).execute # Cambiar según la implementación general
   end
 
-  # Solicitar los datos al usuario
   def add_data(_event, _message, user, bot_instance)
     bot_instance.send_message(user, ADD_DATA)
     @user_data[user.id] = :awaiting_data
   end
-
-  # Generación de comandos personalizados
+  
   def generate_commands
     puts "Welcome to the Command Generator. Enter the command details below."
 
@@ -125,7 +120,6 @@ class Menu
   end
 end
 
-# Main execution
 menu = Menu.new
 menu.generate_commands
 menu.run_bots

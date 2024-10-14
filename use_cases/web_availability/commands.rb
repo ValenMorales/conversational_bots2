@@ -1,11 +1,9 @@
 # frozen_string_literal: true
 
 require_relative 'add_review'
+require_relative '../../commands/commands'
 
-# The BotCommands class defines a set of commands and behaviors
-# for a bot to interact with users. The bot allows users to add websites
-# and receive notifications if the website's domain is down.
-class BotCommands
+class WebsiteBotCommands < BotCommands
   attr_reader :user_data
 
   START = 'Hello! Use /add_website to add a new website.'
@@ -15,8 +13,17 @@ class BotCommands
   INSTRUCTION = 'Send /add_website to add a website.'
 
   def initialize(db_connection)
+    super() 
     @user_data = {}
     @db_connection = db_connection
+    define_commands 
+  end
+
+  def define_commands
+    add_command('/start')
+    add_command('/add_website', nil, 
+    proc do |event, message, user, instance|
+      self.add_website(event, message, user, instance) end)
   end
 
   def custom_handler(event, message, user, bot_instance)
@@ -47,28 +54,4 @@ class BotCommands
     @user_data[user.id] = :awaiting_url
   end
 
-  # Método separado para cada comando
-  def start_command
-    {
-      description: '/start',
-      message: START
-    }
-  end
-
-  def add_website_command
-    {
-      description: '/add_website',
-      action: proc do |event, message, user, bot_instance|
-        add_website(event, message, user, bot_instance)
-      end
-    }
-  end
-
-  # Definir los comandos en un método más pequeño
-  def commands
-    {
-      'start' => start_command,
-      'add_website' => add_website_command
-    }
-  end
 end

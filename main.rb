@@ -11,7 +11,7 @@ TELEGRAM_BOT_TOKEN = ENV['TELEGRAM_TOKEN']
 DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']
 db_connection = ENV['DB_HOST']
 
-bot_commands = BotCommands.new(db_connection)
+bot_commands = WebsiteBotCommands.new(db_connection)
 
 telegram_bot = TelegramBot.new(TELEGRAM_BOT_TOKEN, bot_commands.commands,
                                bot_commands.method(:custom_handler))

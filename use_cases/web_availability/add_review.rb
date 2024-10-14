@@ -2,14 +2,6 @@
 
 require_relative 'request'
 
-{
-  host: ENV['DB_HOST'],
-  adapter: 'postgresql',
-  encoding: 'utf-8',
-  database: ENV['POSTGRES_DB'],
-  schema_search_path: 'public'
-}
-
 module Utils
   ##
   # This class is an implementation of the Write::Base interface, specifically designed

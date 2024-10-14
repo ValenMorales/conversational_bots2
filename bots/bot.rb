@@ -1,8 +1,7 @@
 # frozen_string_literal: true
+require_relative 'utils/exceptions'
 
-require 'logger'
-
-# Base class for different types of bots (e.g., Telegram, Discord).
+# Base class for different types of bots.
 # Handles the registration and execution of commands, including unknown commands.
 class Bot
   attr_reader :commands, :unknown_command_handler
@@ -40,9 +39,9 @@ class Bot
     @processed_commands[command_description] = { message: command_message, action: command_action }
   end
 
-  # Abstract method to listen for and process bot messages. Implement in subclasses.
+  # Abstract method to listen for and process bot messages.
   def read
-    raise NotImplementedError, 'This method should be implemented in subclasses'
+    raise Utils::Exceptions::FunctionNotImplemented
   end
 
   # Evaluates and processes a command.
@@ -68,7 +67,6 @@ class Bot
     end
   end
 
-  # Abstract method to be implemented in subclasses.
   # Extracts the user from the event.
   #
   # @param event [Object] The event object.

@@ -4,17 +4,13 @@ require 'discordrb'
 require 'logger'
 require_relative 'bot'
 
-# DiscordBot class inherits from Bot and implements Discord-specific functionality.
+# Discord bot specific functionality.
 class DiscordBot < Bot
   attr_reader :bot
 
-  # Initializes the DiscordBot with token, commands, and an optional unknown command handler.
-  #
-  # @param token [String] The bot's authentication token for Discord.
-  # @param commands [Hash] A hash containing the bot's commands.
-  # @param unknown_command_handler [Proc, nil] An optional handler for unknown commands.
+  # Initializes the DiscordBot
   def initialize(token, commands, unknown_command_handler = nil)
-    super(token, commands, 'discord', unknown_command_handler) # Corregido el orden de argumentos
+    super(token, commands, 'discord', unknown_command_handler) 
     @bot = Discordrb::Bot.new(token: token)
   end
 
@@ -51,7 +47,7 @@ class DiscordBot < Bot
     end
   end
 
-  # Handles unknown commands by invoking the unknown command handler if defined.
+  # Handles unknown commands.
   #
   # @param event [Discordrb::Events::MessageEvent] The event containing the message and user information.
   def handle_unknown_command(event)

@@ -3,7 +3,7 @@
 require 'telegram/bot'
 require_relative 'bot'
 
-# TelegramBot class that inherits from Bot and manages specific Telegram functionalities.
+# TelegramBot specific functionalities.
 class TelegramBot < Bot
   attr_reader :bot
 
