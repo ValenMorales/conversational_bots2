@@ -15,7 +15,7 @@ class DiscordBot < Bot
   end
 
   # Reads and processes incoming messages by listening to Discord events.
-  def read
+  def start
     @bot.message do |event|
       process_command(event)
     rescue StandardError => e
@@ -45,7 +45,7 @@ class DiscordBot < Bot
     end
   end
 
-  # Handles unknown commands.
+  # Handles unknown commands, invoking the unknown command handler if defined.
   #
   # @param event [Discordrb::Events::MessageEvent] The event containing the message and user information.
   def handle_unknown_command(event)

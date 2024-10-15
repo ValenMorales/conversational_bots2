@@ -7,7 +7,7 @@ require_relative 'use_cases/web_availability/commands'
 
 require 'dotenv'
 Dotenv.load
-#menu
+# menu
 class Menu
   TELEGRAM_BOT_TOKEN = ENV['TELEGRAM_TOKEN']
   DISCORD_BOT_TOKEN = ENV['DISCORD_TOKEN']

@@ -18,7 +18,7 @@ class TelegramBot < Bot
   end
 
   # Listens and processes incoming messages.
-  def read
+  def start
     @bot.listen do |message|
       process_command(message)
     rescue StandardError => e
@@ -52,7 +52,7 @@ class TelegramBot < Bot
     action.call(event, event.text, event.chat, self)
   end
 
-  # Handles unknown commands using the handler defined at initialization, if any.
+  # Handles unknown commands, invoking the unknown command handler if defined.
   #
   # @param event [Telegram::Bot::Types::Message] Message object for the unknown command.
   def handle_unknown_command(event)
