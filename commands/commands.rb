@@ -11,12 +11,13 @@ class BotCommands
 
   def custom_handler(event, message, user, bot_instance); end
 
-  def add_command(description, message = nil, action = nil, type = nil)
-    @commands[description] = {
-      description: description,
-      message: message,
-      action: action,
-      type: type
+  def add_command(command)
+    @commands[command.name] = {
+      name: command.name,
+      description: command.description,
+      message: command.message,
+      action: command.action,
+      type: command.type
     }
   end
 end

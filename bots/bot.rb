@@ -17,43 +17,21 @@ class Bot
   def initialize(token, commands, type, unknown_command_handler = nil)
     @token = token
     @commands = commands
-    @processed_commands = {}
     @unknown_command_handler = unknown_command_handler
     @type = type
   end
 
-  # Registers commands for the bot based on its type.
+  # Reads and processes incoming messages by listening events.
   def start
-    @commands.each_value do |command_info|
-      if valid_command?(command_info)
-        add_command(command_info[:description], command_info[:message],
-                    command_info[:action])
-      end
-    end
-
-    read
-  end
-
-  # Adds a command to the bot.
-  #
-  # @param command_description [String] Command description.
-  # @param command_message [String, nil] Message sent when the command is triggered.
-  # @param command_action [Proc, nil] Action executed when the command is triggered.
-  def add_command(command_description, command_message = nil, command_action = nil)
-    @processed_commands[command_description] = { message: command_message, action: command_action }
-  end
-
-  # Abstract method to listen for and process bot messages.
-  def read
     raise Utils::Exceptions::FunctionNotImplemented
   end
 
-  # Evaluates and processes a command.
+  # Evaluates the type of a command.
   #
   # @param event [Object] The event object representing the message or event.
   def evaluate_command(command, event)
-    if @processed_commands.key?(command)
-      validate_command_type(@processed_commands[command], event)
+    if @commands.key?(command)
+      validate_command_type(@commands[command], event)
     else
       handle_unknown_command(event)
     end
@@ -100,13 +78,5 @@ class Bot
   # @param text [String] The message text to be sent.
   def send_message(_user, _text)
     raise Utils::Exceptions::FunctionNotImplemented
-  end
-
-  # Determines if a command is valid for the current bot type.
-  #
-  # @param command_info [Hash] Command data.
-  # @return [Boolean] True if the command is valid for the bot type.
-  def valid_command?(command_info)
-    command_info[:type].nil? || command_info[:type] == @type
   end
 end
