@@ -33,7 +33,6 @@ module Services
     end
 
     def execute_query(query)
-      puts query
       params = {
         connection: config[:connection],
         query:

@@ -21,37 +21,6 @@ class WebsiteBotCommands < BotCommands
   WEBSITE_REMOVED = 'The website was removed!'
   PROCESSING = 'Processing... 🏃‍♂️'
 
-  COMMANDS_LIST = [
-    {
-      name: '/start',
-      description: 'send the options',
-      action: proc do |event, message, user, instance|
-        start(event, message, user, instance)
-      end
-    },
-    {
-      name: '/add_website',
-      description: 'add a website',
-      action: proc do |event, message, user, instance|
-        add_website(event, message, user, instance)
-      end
-    },
-    {
-      name: '/list_websites',
-      description: 'return the websites associated to the user',
-      action: proc do |event, message, user, instance|
-        list_websites(event, message, user, instance)
-      end
-    },
-    {
-      name: '/remove_website',
-      description: 'delete a website',
-      action: proc do |event, message, user, instance|
-        remove_website(event, message, user, instance)
-      end
-    }
-  ]
-
   def initialize(db_connection)
     super()
     @user_data = {}
@@ -60,16 +29,34 @@ class WebsiteBotCommands < BotCommands
   end
 
   def define_commands
-    COMMANDS_LIST.each do |cmd|
-      add_command(cmd)
+    add_command(name:'/start', description:'send the options', action:
+    proc do |event, message, user, instance|
+      start(event, message, user, instance)
     end
+      )
+      add_command( name: '/add_website',
+      description: 'return the websites associated to the user',
+      action: proc do |event, message, user, instance|
+        add_website(event, message, user, instance)
+      end)
+      add_command( name: '/list_websites',
+      description: 'return the websites associated to the user',
+      action: proc do |event, message, user, instance|
+        list_websites(event, message, user, instance)
+      end)
+      add_command(name: '/remove_website',
+      description: 'delete a website',
+      action: proc do |event, message, user, instance|
+        remove_website(event, message, user, instance)
+      end)
   end
 
+  public
   def start(event, message, user, instance)
     commands = COMMANDS.map { |command| "- /#{command} " }
     message = "#{START}\n#{commands.join("\n")}"
 
-    instance.send_message(user,message);
+    instance.send_message(user,message)
   end
 
   def custom_handler(event, message, user, instance)
