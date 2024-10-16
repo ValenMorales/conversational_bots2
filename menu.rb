@@ -73,7 +73,7 @@ class Menu
         message = gets.chomp
         @custom_commands[command_name] = {
           description: "/#{command_name}",
-          message: message
+          message:
         }
       elsif action_type == 'function'
         puts "Enter the name of the function for '#{command_name}':"

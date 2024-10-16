@@ -1,5 +1,6 @@
 # frozen_string_literal: true
-require_relative '../../commands/commands'
+
+require_relative '../../commands_handler/bot_commands'
 require_relative 'services/list_websites'
 require_relative 'services/remove_website'
 require_relative 'services/add_website'
@@ -29,34 +30,32 @@ class WebsiteBotCommands < BotCommands
   end
 
   def define_commands
-    add_command(name:'/start', description:'send the options', action:
+    add_command(name: '/start', description: 'send the options', action:
     proc do |event, message, user, instance|
       start(event, message, user, instance)
-    end
-      )
-      add_command( name: '/add_website',
-      description: 'return the websites associated to the user',
-      action: proc do |event, message, user, instance|
-        add_website(event, message, user, instance)
-      end)
-      add_command( name: '/list_websites',
-      description: 'return the websites associated to the user',
-      action: proc do |event, message, user, instance|
-        list_websites(event, message, user, instance)
-      end)
-      add_command(name: '/remove_website',
-      description: 'delete a website',
-      action: proc do |event, message, user, instance|
-        remove_website(event, message, user, instance)
-      end)
+    end)
+    add_command(name: '/add_website',
+                description: 'return the websites associated to the user',
+                action: proc do |event, message, user, instance|
+                  add_website(event, message, user, instance)
+                end)
+    add_command(name: '/list_websites',
+                description: 'return the websites associated to the user',
+                action: proc do |event, message, user, instance|
+                  list_websites(event, message, user, instance)
+                end)
+    add_command(name: '/remove_website',
+                description: 'delete a website',
+                action: proc do |event, message, user, instance|
+                  remove_website(event, message, user, instance)
+                end)
   end
 
-  public
-  def start(event, message, user, instance)
+  def start(_event, _message, user, instance)
     commands = COMMANDS.map { |command| "- /#{command} " }
-    message = "#{START}\n#{commands.join("\n")}"
+    output_message = "#{START}\n#{commands.join("\n")}"
 
-    instance.send_message(user,message)
+    instance.send_message(user, output_message)
   end
 
   def custom_handler(event, message, user, instance)
@@ -66,7 +65,7 @@ class WebsiteBotCommands < BotCommands
     elsif user_data[user.id] == :awaiting_remove_url
       validate_remove_option(event, message, user, instance)
     else
-      instance.send_message(user,INSTRUCTION)
+      instance.send_message(user, INSTRUCTION)
     end
   end
 
@@ -74,7 +73,7 @@ class WebsiteBotCommands < BotCommands
     if valid_url(message)
       add_new_website(event, message, user, bot_instance)
     else
-      bot_instance.send_message(user,INVALID)
+      bot_instance.send_message(user, INVALID)
     end
   end
 
@@ -82,10 +81,10 @@ class WebsiteBotCommands < BotCommands
     user_data[user.id] = nil
 
     if user_websites(user).size < MAX_USER_LIMIT
-      save_website(event,message, user, bot_instance)
-      bot_instance.send_message(user,WEBSITE_ADDED)
+      save_website(event, message, user, bot_instance)
+      bot_instance.send_message(user, WEBSITE_ADDED)
     else
-      bot_instance.send_message(user,LIMIT_EXCEEDED)
+      bot_instance.send_message(user, LIMIT_EXCEEDED)
     end
   end
 
@@ -93,7 +92,7 @@ class WebsiteBotCommands < BotCommands
     message.start_with?('http://', 'https://') ? message : "https://#{message}"
   end
 
-  def save_website(event, message, user, _bot_instance)
+  def save_website(_event, message, user, _bot_instance)
     config = { connection: @db_connection, chat_id: user.id, url: valid_url(message) }
     Services::AddWebsite.new(config).execute
   end
@@ -117,7 +116,7 @@ class WebsiteBotCommands < BotCommands
   end
 
   def list_websites(_event, _message, user, bot_instance)
-    bot_instance.send_message(user,PROCESSING)
+    bot_instance.send_message(user, PROCESSING)
 
     websites = user_websites(user).map { |website| "- #{website}" }
 
@@ -126,8 +125,8 @@ class WebsiteBotCommands < BotCommands
     bot_instance.send_message(user, message)
   end
 
-  def remove_website(event, message, user, bot_instance)
-    bot_instance.send_message(user,PROCESSING)
+  def remove_website(_event, _message, user, bot_instance)
+    bot_instance.send_message(user, PROCESSING)
 
     if !user_websites(user).empty?
       user_data[user.id] = :awaiting_remove_url
@@ -137,7 +136,7 @@ class WebsiteBotCommands < BotCommands
 
       bot_instance.send_message(user, new_message)
     else
-      bot_instance.send_message(user,NO_WEBSITES)
+      bot_instance.send_message(user, NO_WEBSITES)
     end
   end
 
@@ -146,7 +145,7 @@ class WebsiteBotCommands < BotCommands
       remove_website(event, message, user, bot_instance)
     else
       delete_website(websites_options(user)[message], user)
-      bot_instance.send_message(user,WEBSITE_REMOVED)
+      bot_instance.send_message(user, WEBSITE_REMOVED)
     end
   end
 
@@ -154,5 +153,4 @@ class WebsiteBotCommands < BotCommands
     config = { connection: @db_connection, website:, chat_id: user.id }
     Services::RemoveWebsite.new(config).execute
   end
-
 end

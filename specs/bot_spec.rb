@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'rspec'
 require_relative '../bots/bot'
 
@@ -5,11 +7,11 @@ RSpec.describe Bot do
   let(:commands) do
     {
       start: { description: '/start', message: 'Welcome!', type: 'telegram' },
-      help: { description: '/help', action: proc { |event, text, user, bot| 'Help!' }, type: 'discord' }
+      help: { description: '/help', action: proc { |_event, _text, _user, _bot| 'Help!' }, type: 'discord' }
     }
   end
 
-  let(:unknown_handler) { proc { |event| 'Unknown command!' } }
+  let(:unknown_handler) { proc { |_event| 'Unknown command!' } }
   let(:bot) { Bot.new('dummy_token', commands, 'telegram', unknown_handler) }
 
   describe '#initialize' do

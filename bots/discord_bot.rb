@@ -11,7 +11,7 @@ class DiscordBot < Bot
   # Initializes the DiscordBot
   def initialize(token, commands, unknown_command_handler = nil)
     super(token, commands, 'discord', unknown_command_handler)
-    @bot = Discordrb::Bot.new(token: token)
+    @bot = Discordrb::Bot.new(token:)
   end
 
   # Reads and processes incoming messages by listening to Discord events.

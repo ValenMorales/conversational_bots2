@@ -66,7 +66,7 @@ class TelegramBot < Bot
   # @param chat [Telegram::Bot::Types::Chat] Chat where the message will be sent.
   # @param text [String] Text of the message to send.
   def send_message(chat, text)
-    @bot.api.send_message(chat_id: chat.id, text: text)
+    @bot.api.send_message(chat_id: chat.id, text:)
   rescue StandardError => e
     Logger.new($stdout).error("Error: Could not send message. #{e.message}")
   end
